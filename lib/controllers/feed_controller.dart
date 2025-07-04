@@ -2,8 +2,12 @@ import 'package:get/get.dart';
 import '../models/post_model.dart';
 import '../models/user_model.dart';
 import '../services/mock_data_service.dart';
+import '../services/post_service.dart';
 
 class FeedController extends GetxController {
+  final IPostService postService;
+  FeedController(this.postService);
+
   final RxList<Post> posts = <Post>[].obs;
   final RxBool isLoading = false.obs;
 
@@ -13,13 +17,10 @@ class FeedController extends GetxController {
     loadFeed();
   }
 
-  void loadFeed() {
+  Future<void> loadFeed() async {
     isLoading.value = true;
-    // Simulate API call delay
-    Future.delayed(Duration(milliseconds: 500), () {
-      posts.value = MockDataService.getFeedPosts();
-      isLoading.value = false;
-    });
+    posts.value = await postService.fetchPosts();
+    isLoading.value = false;
   }
 
   void likePost(String postId) {
@@ -67,34 +68,12 @@ class FeedController extends GetxController {
     }
   }
 
-  void refreshFeed() {
-    loadFeed();
+  Future<void> createPost({required String content, String? imagePath}) async {
+    await postService.createPost(content: content, imagePath: imagePath);
+    await loadFeed();
   }
 
-  Future<void> createPost({required String content, String? imagePath}) async {
-    // Create a new post
-    final newPost = Post(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      author: User(
-        id: 'current_user',
-        username: 'username',
-        displayName: 'User Name',
-        profileImage: null,
-        isVerified: false,
-      ),
-      content: content,
-      images: imagePath != null ? [imagePath] : [],
-      createdAt: DateTime.now(),
-      likesCount: 0,
-      repliesCount: 0,
-      repostsCount: 0,
-      isLiked: false,
-      isReposted: false,
-      repostedPost: null,
-      replyTo: null,
-    );
-
-    // Add to the beginning of the posts list
-    posts.insert(0, newPost);
+  Future<void> refreshFeed() async {
+    await loadFeed();
   }
 }

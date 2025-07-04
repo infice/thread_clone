@@ -1,66 +1,122 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../models/user_model.dart';
 import '../services/mock_data_service.dart';
+import '../services/auth_service.dart';
 
 class AuthController extends GetxController {
+  final IAuthService authService;
+  AuthController(this.authService);
+
   final Rx<User?> currentUser = Rx<User?>(null);
   final RxBool isLoading = false.obs;
+  final RxBool isPasswordVisible = false.obs;
+  final RxInt currentIndex = 0.obs;
+
+  // TextEditingControllers
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+
+  bool get isLoggedIn => currentUser.value != null;
 
   @override
   void onInit() {
     super.onInit();
-    // Don't auto-login, let user authenticate manually
+    // Initialize with a default user for demo
+    currentUser.value = User(
+      id: 'current_user',
+      username: 'user',
+      displayName: 'User Name',
+      profileImage: null,
+      isVerified: false,
+    );
+  }
+
+  @override
+  void onClose() {
+    usernameController.dispose();
+    passwordController.dispose();
+    emailController.dispose();
+    nameController.dispose();
+    confirmPasswordController.dispose();
+    super.onClose();
+  }
+
+  void togglePasswordVisibility() {
+    isPasswordVisible.value = !isPasswordVisible.value;
+  }
+
+  void changeIndex(int index) {
+    currentIndex.value = index;
+  }
+
+  Future<bool> login() async {
+    if (usernameController.text.isEmpty || passwordController.text.isEmpty) {
+      Get.snackbar('error'.tr, 'invalid_credentials'.tr);
+      return false;
+    }
+    
+    isLoading.value = true;
+    final success = await authService.loginWithCredentials(
+      usernameController.text.trim(),
+      passwordController.text.trim(),
+    );
+    isLoading.value = false;
+    
+    if (success) {
+      Get.offAllNamed('/main');
+    } else {
+      Get.snackbar('error'.tr, 'invalid_credentials'.tr);
+    }
+    
+    return success;
+  }
+
+  Future<bool> signup() async {
+    if (nameController.text.isEmpty || 
+        emailController.text.isEmpty || 
+        passwordController.text.isEmpty ||
+        confirmPasswordController.text.isEmpty) {
+      Get.snackbar('error'.tr, 'fill_fields_correctly'.tr);
+      return false;
+    }
+
+    if (passwordController.text != confirmPasswordController.text) {
+      Get.snackbar('error'.tr, 'passwords_dont_match'.tr);
+      return false;
+    }
+    
+    isLoading.value = true;
+    final success = await authService.signup(
+      nameController.text.trim(),
+      emailController.text.trim(),
+      emailController.text.trim(),
+      passwordController.text.trim(),
+    );
+    isLoading.value = false;
+    
+    if (success) {
+      Get.offAllNamed('/main');
+    } else {
+      Get.snackbar('error'.tr, 'fill_fields_correctly'.tr);
+    }
+    
+    return success;
   }
 
   Future<bool> loginWithCredentials(String username, String password) async {
     isLoading.value = true;
-    
-    // Simulate API call
-    await Future.delayed(Duration(seconds: 1));
-    
-    // Mock authentication
-    if (username == 'user' && password == '123456') {
-      currentUser.value = MockDataService.getCurrentUser();
-      isLoading.value = false;
-      return true;
-    }
-    
+    final success = await authService.loginWithCredentials(username, password);
     isLoading.value = false;
-    return false;
+    return success;
   }
 
-  Future<bool> signup(String fullName, String username, String email, String password) async {
-    isLoading.value = true;
-    
-    // Simulate API call
-    await Future.delayed(Duration(seconds: 1));
-    
-    // For demo purposes, accept any valid signup data
-    if (fullName.isNotEmpty && username.isNotEmpty && email.isNotEmpty && password.isNotEmpty) {
-      // Create a new user with the provided data
-      currentUser.value = User(
-        id: 'new_user_${DateTime.now().millisecondsSinceEpoch}',
-        username: username,
-        displayName: fullName,
-        profileImage: null,
-        bio: 'New Threads user',
-        followersCount: 0,
-        followingCount: 0,
-        isVerified: false,
-        isFollowing: false,
-      );
-      isLoading.value = false;
-      return true;
-    }
-    
-    isLoading.value = false;
-    return false;
-  }
-
-  void logout() {
+  Future<void> logout() async {
+    await authService.logout();
     currentUser.value = null;
     Get.offAllNamed('/login');
   }
-
-  bool get isLoggedIn => currentUser.value != null;
 }

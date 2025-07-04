@@ -21,7 +21,6 @@ class AppSizes {
   static const double avatarSize = 40.0;
   static const double largeAvatarSize = 60.0;
 }
-
 class AppTextStyles {
   static const TextStyle heading = TextStyle(
     fontSize: 20,
@@ -44,3 +43,4 @@ class AppTextStyles {
     color: AppColors.secondary,
   );
 }
+

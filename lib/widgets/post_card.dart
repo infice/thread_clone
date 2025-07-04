@@ -83,7 +83,7 @@ class PostCard extends StatelessWidget {
         ),
         if (post.author.isVerified) ...[
           const SizedBox(width: 4),
-          const Icon(Icons.verified, size: 16, color: AppColors.verified),
+          Icon(Icons.verified, size: 16, color: AppColors.verified),
         ],
         const Spacer(),
         Text(

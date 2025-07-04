@@ -7,14 +7,8 @@ import 'feed_view.dart';
 import 'profile_view.dart';
 import 'create_post_view.dart';
 
-class MainNavigation extends StatefulWidget {
-  @override
-  _MainNavigationState createState() => _MainNavigationState();
-}
-
-class _MainNavigationState extends State<MainNavigation> {
-  final AuthController authController = Get.find<AuthController>();
-  int _currentIndex = 0;
+class MainNavigation extends GetView<AuthController> {
+  final RxInt _currentIndex = 0.obs;
 
   final List<Widget> _screens = [
     FeedView(),
@@ -28,94 +22,111 @@ class _MainNavigationState extends State<MainNavigation> {
       Get.to(() => CreatePostView(), transition: Transition.downToUp);
       return;
     }
-    setState(() {
-      _currentIndex = index > 2 ? index - 1 : index;
-    });
+    _currentIndex.value = index > 2 ? index - 1 : index;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: _screens),
-      bottomNavigationBar: _buildBottomNavigationBar(),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: Obx(() => IndexedStack(index: _currentIndex.value, children: _screens)),
+      bottomNavigationBar: _buildBottomNavigationBar(context),
     );
   }
 
   static Widget _buildSearchViewPlaceholder() {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        title: Text('Search', style: AppTextStyles.heading),
-      ),
-      body: Center(
-        child: Text(
-          'Search functionality coming soon',
-          style: AppTextStyles.body,
+    return Builder(
+      builder: (context) => Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+          elevation: 0,
+          title: Text(
+            'search'.tr, 
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).textTheme.titleLarge?.color,
+            ),
+          ),
+        ),
+        body: Center(
+          child: Text(
+            'search_coming_soon'.tr,
+            style: TextStyle(
+              fontSize: 16,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+            ),
+          ),
         ),
       ),
     );
   }
 
   static Widget _buildActivityViewPlaceholder() {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        title: Text('Activity', style: AppTextStyles.heading),
-      ),
-      body: Center(
-        child: Text('Activity feed coming soon', style: AppTextStyles.body),
-      ),
-    );
-  }
-
-  Widget _buildProfileView() {
-    return ProfileView();
-  }
-
-  Widget _buildBottomNavigationBar() {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      backgroundColor: AppColors.background,
-      selectedItemColor: AppColors.primary,
-      unselectedItemColor: AppColors.secondary,
-      showSelectedLabels: false,
-      showUnselectedLabels: false,
-      currentIndex: _currentIndex < 2 ? _currentIndex : _currentIndex + 1,
-      onTap: _onTap,
-      items: [
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.home_outlined),
-          activeIcon: Icon(Icons.home),
-          label: '',
-        ),
-        const BottomNavigationBarItem(icon: Icon(Icons.search), label: ''),
-        BottomNavigationBarItem(
-          icon: SvgPicture.asset(
-            'assets/icons/create_post.svg',
-            width: 24,
-            height: 24,
-            colorFilter: const ColorFilter.mode(
-              AppColors.secondary,
-              BlendMode.srcIn,
+    return Builder(
+      builder: (context) => Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+          elevation: 0,
+          title: Text(
+            'activity'.tr, 
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).textTheme.titleLarge?.color,
             ),
           ),
-          label: '',
         ),
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.favorite_border_outlined),
+        body: Center(
+          child: Text(
+            'activity_coming_soon'.tr, 
+            style: TextStyle(
+              fontSize: 16,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomNavigationBar(BuildContext context) {
+    return Obx(() => BottomNavigationBar(
+      currentIndex: _currentIndex.value,
+      onTap: _onTap,
+      type: BottomNavigationBarType.fixed,
+      backgroundColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+      selectedItemColor: Theme.of(context).primaryColor,
+      unselectedItemColor: Theme.of(context).bottomNavigationBarTheme.unselectedItemColor,
+      items: [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home_outlined),
+          activeIcon: Icon(Icons.home),
+          label: 'home'.tr,
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.search_outlined),
+          activeIcon: Icon(Icons.search),
+          label: 'search'.tr,
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.add_box_outlined),
+          activeIcon: Icon(Icons.add_box),
+          label: 'create'.tr,
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.favorite_outline),
           activeIcon: Icon(Icons.favorite),
-          label: '',
+          label: 'activity'.tr,
         ),
-        const BottomNavigationBarItem(
+        BottomNavigationBarItem(
           icon: Icon(Icons.person_outline),
           activeIcon: Icon(Icons.person),
-          label: '',
+          label: 'profile'.tr,
         ),
       ],
-    );
+    ));
   }
 }

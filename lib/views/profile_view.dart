@@ -5,108 +5,106 @@ import '../controllers/feed_controller.dart';
 import '../models/user_model.dart';
 import '../widgets/post_card.dart';
 import '../utils/constants.dart';
+import '../views/settings_view.dart';
+import '../bindings/settings_binding.dart';
 
-class ProfileView extends StatelessWidget {
-  final AuthController authController = Get.find<AuthController>();
+class ProfileView extends GetView<AuthController> {
   final FeedController feedController = Get.find<FeedController>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: _buildAppBar(),
-      body: _buildBody(),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: _buildAppBar(context),
+      body: _buildBody(context),
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       elevation: 0,
-      title: Text('Profile', style: AppTextStyles.heading),
+      title: Text('profile'.tr, style: TextStyle(
+        color: Theme.of(context).textTheme.titleLarge?.color,
+      )),
+      centerTitle: true,
       actions: [
         IconButton(
-          icon: Icon(Icons.settings, color: AppColors.primary),
+          icon: Icon(Icons.settings, color: Theme.of(context).primaryColor),
           onPressed: () {
-            // Handle settings
+            Get.toNamed('/settings');
           },
-        ),
-        IconButton(
-          icon: Icon(Icons.logout, color: AppColors.primary),
-          onPressed: () => authController.logout(),
         ),
       ],
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(BuildContext context) {
     return SingleChildScrollView(
+      padding: const EdgeInsets.all(AppSizes.padding),
       child: Column(
         children: [
-          _buildProfileHeader(),
-          _buildProfileStats(),
-          _buildProfileActions(),
-          _buildUserPosts(),
+          _buildProfileHeader(context),
+          const SizedBox(height: AppSizes.padding * 2),
+          _buildStatsSection(context),
+          const SizedBox(height: AppSizes.padding * 2),
+          _buildActionButtons(context),
+          _buildUserPosts(context),
         ],
       ),
     );
   }
 
-  Widget _buildProfileHeader() {
-    return Container(
-      padding: EdgeInsets.all(AppSizes.padding),
-      child: Column(
-        children: [
-          // Profile Image
-          CircleAvatar(
-            radius: 50,
-            backgroundColor: AppColors.primary,
-            child: Icon(Icons.person, size: 50, color: Colors.white),
+  Widget _buildProfileHeader(BuildContext context) {
+    return Column(
+      children: [
+        CircleAvatar(
+          radius: 50,
+          backgroundColor: Theme.of(context).primaryColor,
+          child: Icon(Icons.person, size: 50, color: Colors.white),
+        ),
+        const SizedBox(height: AppSizes.padding),
+        Text(
+          'John Doe',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).textTheme.titleLarge?.color,
           ),
-          SizedBox(height: 16),
-
-          // User Info
-          Text(
-            'User Name',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: AppColors.text,
-            ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          '@johndoe',
+          style: TextStyle(
+            fontSize: 16,
+            color: Theme.of(context).textTheme.bodyMedium?.color,
           ),
-          SizedBox(height: 4),
-          Text(
-            '@username',
-            style: TextStyle(fontSize: 16, color: AppColors.secondary),
+        ),
+        const SizedBox(height: AppSizes.padding),
+        Text(
+          'Flutter Developer | Coffee Lover | Tech Enthusiast',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 14,
+            color: Theme.of(context).textTheme.bodyMedium?.color,
           ),
-          SizedBox(height: 12),
-
-          // Bio
-          Text(
-            'This is a sample bio for the user. You can add your own bio here.',
-            style: TextStyle(fontSize: 16, color: AppColors.text),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  Widget _buildProfileStats() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: AppSizes.padding),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildStatItem('Posts', '42'),
-          _buildStatItem('Followers', '1.2K'),
-          _buildStatItem('Following', '890'),
-        ],
-      ),
+  Widget _buildStatsSection(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _buildStatItem(context, 'posts'.tr, '42'),
+        _buildStatItem(context, 'followers'.tr, '1.2K'),
+        _buildStatItem(context, 'following'.tr, '890'),
+      ],
     );
   }
 
-  Widget _buildStatItem(String label, String value) {
+  Widget _buildStatItem(BuildContext context, String label, String value) {
     return Column(
       children: [
         Text(
@@ -114,67 +112,58 @@ class ProfileView extends StatelessWidget {
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: AppColors.text,
+            color: Theme.of(context).textTheme.titleLarge?.color,
           ),
         ),
-        SizedBox(height: 4),
-        Text(label, style: TextStyle(fontSize: 14, color: AppColors.secondary)),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            color: Theme.of(context).textTheme.bodyMedium?.color,
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildProfileActions() {
-    return Container(
-      padding: EdgeInsets.all(AppSizes.padding),
-      child: Row(
-        children: [
-          Expanded(
-            child: OutlinedButton(
-              onPressed: () {
-                // Handle edit profile
-              },
-              style: OutlinedButton.styleFrom(
-                side: BorderSide(color: AppColors.border),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              child: Text(
-                'Edit Profile',
-                style: TextStyle(
-                  color: AppColors.text,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+  Widget _buildActionButtons(BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: () {
+              // Edit profile action
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor,
+              padding: const EdgeInsets.symmetric(vertical: 12),
             ),
+            child: Text('edit_profile'.tr, style: TextStyle(color: Colors.white)),
           ),
-          SizedBox(width: 12),
-          Expanded(
-            child: ElevatedButton(
-              onPressed: () {
-                // Handle share profile
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              child: Text(
-                'Share Profile',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+        ),
+        const SizedBox(height: AppSizes.padding),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton(
+            onPressed: () {
+              controller.logout();
+            },
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(color: Theme.of(context).primaryColor),
+              padding: const EdgeInsets.symmetric(vertical: 12),
             ),
+            child: Text('logout'.tr, style: TextStyle(
+              color: Theme.of(context).primaryColor,
+            )),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  Widget _buildUserPosts() {
+  Widget _buildUserPosts(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: AppSizes.padding),
       child: Column(
@@ -187,7 +176,7 @@ class ProfileView extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: AppColors.text,
+                color: Theme.of(context).textTheme.titleLarge?.color,
               ),
             ),
           ),
@@ -215,14 +204,14 @@ class ProfileView extends StatelessWidget {
                       Icon(
                         Icons.post_add_outlined,
                         size: 64,
-                        color: AppColors.secondary,
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
                       ),
                       SizedBox(height: 16),
                       Text(
                         'No posts yet',
                         style: TextStyle(
                           fontSize: 16,
-                          color: AppColors.secondary,
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
                         ),
                       ),
                       SizedBox(height: 8),
@@ -230,7 +219,7 @@ class ProfileView extends StatelessWidget {
                         'Start sharing your thoughts!',
                         style: TextStyle(
                           fontSize: 14,
-                          color: AppColors.secondary,
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
                         ),
                       ),
                     ],

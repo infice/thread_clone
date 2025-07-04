@@ -5,32 +5,30 @@ import '../widgets/post_card.dart';
 import '../utils/constants.dart';
 import 'create_post_view.dart';
 
-class FeedView extends StatelessWidget {
-  final FeedController controller = Get.put(FeedController());
-
+class FeedView extends GetView<FeedController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: _buildAppBar(),
-      body: _buildBody(),
-      floatingActionButton: _buildFloatingActionButton(),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: _buildAppBar(context),
+      body: _buildBody(context),
+      floatingActionButton: _buildFloatingActionButton(context),
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       elevation: 0,
-      title: const Icon(
-        IconData(0xe35e, fontFamily: 'MaterialIcons'),
-        color: AppColors.primary,
+      title: Icon(
+        const IconData(0xe35e, fontFamily: 'MaterialIcons'),
+        color: Theme.of(context).primaryColor,
         size: 32,
       ),
       centerTitle: true,
       actions: [
         IconButton(
-          icon: Icon(Icons.add_box_outlined, color: AppColors.primary),
+          icon: Icon(Icons.add_box_outlined, color: Theme.of(context).primaryColor),
           onPressed: () {
             Get.to(() => CreatePostView());
           },
@@ -39,7 +37,7 @@ class FeedView extends StatelessWidget {
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(BuildContext context) {
     return Obx(() {
       if (controller.isLoading.value) {
         return Center(child: CircularProgressIndicator());
@@ -50,9 +48,9 @@ class FeedView extends StatelessWidget {
         },
         child: CustomScrollView(
           slivers: [
-            SliverToBoxAdapter(child: _buildCreatePostTile()),
+            SliverToBoxAdapter(child: _buildCreatePostTile(context)),
             if (controller.posts.isEmpty)
-              SliverFillRemaining(child: _buildEmptyFeed())
+              SliverFillRemaining(child: _buildEmptyFeed(context))
             else
               SliverList(
                 delegate: SliverChildBuilderDelegate((context, index) {
@@ -65,7 +63,7 @@ class FeedView extends StatelessWidget {
     });
   }
 
-  Widget _buildCreatePostTile() {
+  Widget _buildCreatePostTile(BuildContext context) {
     return GestureDetector(
       onTap: () => Get.to(() => CreatePostView()),
       child: Container(
@@ -73,50 +71,56 @@ class FeedView extends StatelessWidget {
           horizontal: AppSizes.padding,
           vertical: AppSizes.padding,
         ),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           border: Border(
-            bottom: BorderSide(color: AppColors.border, width: 0.8),
+            bottom: BorderSide(color: Theme.of(context).dividerColor, width: 0.8),
           ),
         ),
         child: Row(
           children: [
-            const CircleAvatar(
+            CircleAvatar(
               radius: AppSizes.avatarSize / 2,
-              backgroundColor: AppColors.secondary,
+              backgroundColor: Theme.of(context).primaryColor,
               child: Icon(Icons.person, color: Colors.white),
             ),
             const SizedBox(width: AppSizes.padding),
-            Text('What\'s new?', style: AppTextStyles.caption),
+            Text('whats_new'.tr, style: TextStyle(
+              color: Theme.of(context).textTheme.bodyMedium?.color,
+              fontSize: 16,
+            )),
             const Spacer(),
-            const Icon(Icons.image_outlined, color: AppColors.secondary),
+            Icon(Icons.image_outlined, color: Theme.of(context).iconTheme.color),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildEmptyFeed() {
+  Widget _buildEmptyFeed(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.feed_outlined, size: 64, color: AppColors.secondary),
+          Icon(Icons.feed_outlined, size: 64, color: Theme.of(context).iconTheme.color),
           SizedBox(height: AppSizes.padding),
           Text(
-            'No posts yet',
-            style: AppTextStyles.body.copyWith(color: AppColors.secondary),
+            'no_posts'.tr,
+            style: TextStyle(
+              color: Theme.of(context).textTheme.bodyMedium?.color,
+              fontSize: 16,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildFloatingActionButton() {
+  Widget _buildFloatingActionButton(BuildContext context) {
     return FloatingActionButton(
       onPressed: () {
         Get.to(() => CreatePostView());
       },
-      backgroundColor: AppColors.primary,
+      backgroundColor: Theme.of(context).primaryColor,
       child: Icon(Icons.edit, color: Colors.white),
     );
   }

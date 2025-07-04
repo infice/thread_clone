@@ -1,143 +1,83 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'controllers/auth_controller.dart';
-import 'controllers/feed_controller.dart';
-import 'views/main_navigation.dart';
+import 'views/feed_view.dart';
 import 'views/auth/login_view.dart';
-import 'utils/constants.dart';
+import 'views/auth/signup_view.dart';
+import 'views/profile_view.dart';
+import 'views/create_post_view.dart';
+import 'views/main_navigation.dart';
+import 'views/settings_view.dart';
+import 'bindings/feed_binding.dart';
+import 'bindings/auth_binding.dart';
+import 'bindings/settings_binding.dart';
+import 'translations/app_translations.dart';
+import 'theme/app_theme.dart';
+import 'services/theme_service.dart';
+import 'services/localization_service.dart';
 
-void main() {
-  runApp(ThreadsCloneApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize services
+  await Get.putAsync(() => ThemeService().init());
+  await Get.putAsync(() => LocalizationService().init());
+  
+  runApp(MyApp());
 }
 
-class ThreadsCloneApp extends StatelessWidget {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final themeService = Get.find<ThemeService>();
+    final localizationService = Get.find<LocalizationService>();
+    
     return GetMaterialApp(
-      title: 'Threads Clone',
-      theme: ThemeData(
-        primarySwatch: Colors.grey,
-        scaffoldBackgroundColor: AppColors.background,
-        appBarTheme: AppBarTheme(
-          backgroundColor: AppColors.background,
-          elevation: 0,
-          iconTheme: IconThemeData(color: AppColors.primary),
-          titleTextStyle: AppTextStyles.heading,
-        ),
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          backgroundColor: AppColors.background,
-          selectedItemColor: AppColors.primary,
-          unselectedItemColor: AppColors.secondary,
-        ),
-      ),
-      home: SplashScreen(),
-      getPages: [
-        GetPage(name: '/login', page: () => LoginView()),
-        GetPage(name: '/main', page: () => MainNavigation()),
-      ],
       debugShowCheckedModeBanner: false,
-    );
-  }
-}
-
-class SplashScreen extends StatefulWidget {
-  @override
-  _SplashScreenState createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  final AuthController authController = Get.put(AuthController());
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeApp();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [AppColors.background, AppColors.surface],
-          ),
+      initialRoute: '/login',
+      initialBinding: AuthBinding(),
+      translations: AppTranslations(),
+      locale: localizationService.locale,
+      fallbackLocale: const Locale('en', 'US'),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeService.themeMode,
+      getPages: [
+        GetPage(
+          name: '/login',
+          page: () => LoginView(),
+          binding: AuthBinding(),
         ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Logo
-              Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(60),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withOpacity(0.3),
-                      blurRadius: 20,
-                      offset: Offset(0, 10),
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: Icon(
-                    const IconData(0xe35e, fontFamily: 'MaterialIcons'),
-                    size: 60,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              SizedBox(height: 32),
-              // App Name
-              Text(
-                'Threads',
-                style: TextStyle(
-                  fontSize: 48,
-                  fontWeight: FontWeight.w300,
-                  color: AppColors.primary,
-                  letterSpacing: -1.0,
-                ),
-              ),
-              SizedBox(height: 16),
-              // Tagline
-              Text(
-                'Instagram\'s text-based conversation app',
-                style: AppTextStyles.caption,
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 64),
-              // Loading indicator
-              Obx(() {
-                if (authController.isLoading.value) {
-                  return CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      AppColors.primary,
-                    ),
-                  );
-                }
-                return SizedBox.shrink();
-              }),
-            ],
-          ),
+        GetPage(
+          name: '/signup',
+          page: () => SignupView(),
+          binding: AuthBinding(),
         ),
-      ),
+        GetPage(
+          name: '/main',
+          page: () => MainNavigation(),
+          bindings: [AuthBinding(), FeedBinding()],
+        ),
+        GetPage(
+          name: '/feed',
+          page: () => FeedView(),
+          binding: FeedBinding(),
+        ),
+        GetPage(
+          name: '/profile',
+          page: () => ProfileView(),
+          bindings: [AuthBinding(), FeedBinding()],
+        ),
+        GetPage(
+          name: '/create_post',
+          page: () => CreatePostView(),
+          binding: FeedBinding(),
+        ),
+        GetPage(
+          name: '/settings',
+          page: () => SettingsView(),
+          binding: SettingsBinding(),
+        ),
+      ],
     );
-  }
-
-  void _initializeApp() {
-    // Simulate app initialization
-    Future.delayed(Duration(seconds: 2), () {
-      if (authController.isLoggedIn) {
-        Get.offAll(() => MainNavigation());
-      } else {
-        Get.offAll(() => LoginView());
-      }
-    });
   }
 }

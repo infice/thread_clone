@@ -5,108 +5,91 @@ import 'dart:io';
 import '../controllers/feed_controller.dart';
 import '../utils/constants.dart';
 
-class CreatePostView extends StatefulWidget {
-  @override
-  _CreatePostViewState createState() => _CreatePostViewState();
-}
-
-class _CreatePostViewState extends State<CreatePostView> {
+class CreatePostView extends GetView<FeedController> {
   final TextEditingController _contentController = TextEditingController();
-  final FeedController _feedController = Get.find<FeedController>();
-  File? _selectedImage;
-  bool _isPosting = false;
-
-  @override
-  void dispose() {
-    _contentController.dispose();
-    super.dispose();
-  }
+  final Rx<File?> _selectedImage = Rx<File?>(null);
+  final RxBool _isPosting = false.obs;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: _buildAppBar(),
-      body: _buildBody(),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: _buildAppBar(context),
+      body: _buildBody(context),
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       elevation: 0,
       leading: IconButton(
-        icon: Icon(Icons.close, color: AppColors.primary),
+        icon: Icon(Icons.close, color: Theme.of(context).primaryColor),
         onPressed: () => Get.back(),
       ),
-      title: Text('New thread', style: AppTextStyles.heading),
+      title: Text('new_post'.tr, style: TextStyle(
+        color: Theme.of(context).textTheme.titleLarge?.color,
+      )),
+      centerTitle: true,
       actions: [
         TextButton(
-          onPressed: _isPosting ? null : _createPost,
-          child:
-              _isPosting
-                  ? SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        AppColors.primary,
-                      ),
-                    ),
-                  )
-                  : Text(
-                    'Post',
-                    style: TextStyle(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
+          onPressed: _isPosting.value ? null : () => _createPost(context),
+          child: Text(
+            'post'.tr,
+            style: TextStyle(
+              color: _isPosting.value 
+                ? Theme.of(context).disabledColor 
+                : Theme.of(context).primaryColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(AppSizes.padding),
+      padding: const EdgeInsets.all(AppSizes.padding),
       child: Column(
         children: [
-          _buildUserInfo(),
-          SizedBox(height: 16),
-          _buildContentField(),
-          SizedBox(height: 16),
-          if (_selectedImage != null) _buildSelectedImage(),
+          _buildUserInfo(context),
+          const SizedBox(height: AppSizes.padding),
+          _buildContentField(context),
+          const SizedBox(height: AppSizes.padding),
+          Obx(() => _selectedImage.value != null ? _buildSelectedImage(context) : SizedBox.shrink()),
           Spacer(),
-          _buildImagePicker(),
+          _buildImagePicker(context),
         ],
       ),
     );
   }
 
-  Widget _buildUserInfo() {
+  Widget _buildUserInfo(BuildContext context) {
     return Row(
       children: [
         CircleAvatar(
-          radius: 20,
-          backgroundColor: AppColors.primary,
+          radius: AppSizes.avatarSize / 2,
+          backgroundColor: Theme.of(context).primaryColor,
           child: Icon(Icons.person, color: Colors.white),
         ),
-        SizedBox(width: 12),
+        const SizedBox(width: AppSizes.padding),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'User Name',
+              'John Doe',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: AppColors.text,
+                color: Theme.of(context).textTheme.titleMedium?.color,
               ),
             ),
             Text(
-              '@username',
-              style: TextStyle(color: AppColors.secondary, fontSize: 12),
+              '@johndoe',
+              style: TextStyle(
+                fontSize: 14,
+                color: Theme.of(context).textTheme.bodyMedium?.color,
+              ),
             ),
           ],
         ),
@@ -114,35 +97,42 @@ class _CreatePostViewState extends State<CreatePostView> {
     );
   }
 
-  Widget _buildContentField() {
-    return TextField(
-      controller: _contentController,
-      maxLines: 8,
-      maxLength: 500,
-      decoration: InputDecoration(
-        hintText: 'Start a thread...',
-        hintStyle: TextStyle(color: AppColors.secondary),
-        border: InputBorder.none,
-        counterStyle: TextStyle(color: AppColors.secondary),
+  Widget _buildContentField(BuildContext context) {
+    return Expanded(
+      child: TextField(
+        controller: _contentController,
+        maxLines: null,
+        expands: true,
+        textAlignVertical: TextAlignVertical.top,
+        decoration: InputDecoration(
+          hintText: 'whats_on_your_mind'.tr,
+          hintStyle: TextStyle(
+            color: Theme.of(context).hintColor,
+          ),
+          border: InputBorder.none,
+        ),
+        style: TextStyle(
+          fontSize: 16,
+          color: Theme.of(context).textTheme.bodyLarge?.color,
+        ),
       ),
-      style: TextStyle(fontSize: 16, color: AppColors.text),
     );
   }
 
-  Widget _buildSelectedImage() {
+  Widget _buildSelectedImage(BuildContext context) {
     return Container(
       width: double.infinity,
       height: 200,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: Theme.of(context).primaryColor),
       ),
       child: Stack(
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: Image.file(
-              _selectedImage!,
+              _selectedImage.value!,
               width: double.infinity,
               height: 200,
               fit: BoxFit.cover,
@@ -153,9 +143,7 @@ class _CreatePostViewState extends State<CreatePostView> {
             right: 8,
             child: GestureDetector(
               onTap: () {
-                setState(() {
-                  _selectedImage = null;
-                });
+                _selectedImage.value = null;
               },
               child: Container(
                 padding: EdgeInsets.all(4),
@@ -172,20 +160,35 @@ class _CreatePostViewState extends State<CreatePostView> {
     );
   }
 
-  Widget _buildImagePicker() {
+  Widget _buildImagePicker(BuildContext context) {
     return Row(
       children: [
         IconButton(
+          icon: Icon(Icons.image_outlined, color: Theme.of(context).primaryColor),
           onPressed: _pickImage,
-          icon: Icon(Icons.image, color: AppColors.primary),
         ),
-        Text(
-          'Add photo',
-          style: TextStyle(
-            color: AppColors.primary,
-            fontWeight: FontWeight.w500,
+        IconButton(
+          icon: Icon(Icons.camera_alt_outlined, color: Theme.of(context).primaryColor),
+          onPressed: () {
+            // Handle camera
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.location_on_outlined, color: Theme.of(context).primaryColor),
+          onPressed: () {
+            // Handle location
+          },
+        ),
+        const Spacer(),
+        if (_isPosting.value)
+          SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
+            ),
           ),
-        ),
       ],
     );
   }
@@ -195,55 +198,49 @@ class _CreatePostViewState extends State<CreatePostView> {
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
-      setState(() {
-        _selectedImage = File(image.path);
-      });
+      _selectedImage.value = File(image.path);
     }
   }
 
-  Future<void> _createPost() async {
+  Future<void> _createPost(BuildContext context) async {
     if (_contentController.text.trim().isEmpty) {
       Get.snackbar(
-        'Error',
-        'Please enter some content',
-        backgroundColor: Colors.red,
+        'error'.tr,
+        'post_content_required'.tr,
+        backgroundColor: Theme.of(context).colorScheme.error,
         colorText: Colors.white,
       );
       return;
     }
 
-    setState(() {
-      _isPosting = true;
-    });
+    _isPosting.value = true;
 
     try {
       // Simulate API call
       await Future.delayed(Duration(seconds: 1));
 
       // Add post to feed
-      await _feedController.createPost(
+      await controller.createPost(
         content: _contentController.text.trim(),
-        imagePath: _selectedImage?.path,
+        imagePath: _selectedImage.value?.path,
       );
 
       Get.back();
       Get.snackbar(
-        'Success',
-        'Post created successfully!',
-        backgroundColor: Colors.green,
+        'success'.tr,
+        'post_created'.tr,
+        backgroundColor: Theme.of(context).primaryColor,
         colorText: Colors.white,
       );
     } catch (e) {
       Get.snackbar(
-        'Error',
-        'Failed to create post',
+        'error'.tr,
+        'failed_create_post'.tr,
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
     } finally {
-      setState(() {
-        _isPosting = false;
-      });
+      _isPosting.value = false;
     }
   }
 }
