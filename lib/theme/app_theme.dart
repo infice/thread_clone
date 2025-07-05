@@ -30,16 +30,17 @@ class AppTheme {
         onTertiary: Colors.white,
       ),
       scaffoldBackgroundColor: const Color(0xFFF7F9FA),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Color(0xFFF7F9FA),
-        foregroundColor: Color(0xFF14171A),
+      appBarTheme: AppBarTheme(
+        backgroundColor: const Color(0xFFF7F9FA),
+        foregroundColor: const Color(0xFF14171A),
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: TextStyle(
+        titleTextStyle: const TextStyle(
           color: Color(0xFF14171A),
           fontSize: 18,
           fontWeight: FontWeight.w600,
         ),
+        iconTheme: const IconThemeData(color: Color(0xFF14171A)),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: Colors.white,
@@ -109,8 +110,12 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: Color(0xFFE0245E), width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
         hintStyle: const TextStyle(color: Color(0xFF657786)),
+        labelStyle: const TextStyle(color: Color(0xFF657786)),
       ),
       textTheme: const TextTheme(
         displayLarge: TextStyle(color: Color(0xFF14171A)),
@@ -129,10 +134,7 @@ class AppTheme {
         labelMedium: TextStyle(color: Color(0xFF14171A)),
         labelSmall: TextStyle(color: Color(0xFF657786)),
       ),
-      iconTheme: const IconThemeData(
-        color: Color(0xFF657786),
-        size: 24,
-      ),
+      iconTheme: const IconThemeData(color: Color(0xFF657786), size: 24),
       dividerTheme: const DividerThemeData(
         color: Color(0xFFE1E8ED),
         thickness: 0.5,
@@ -140,9 +142,7 @@ class AppTheme {
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.reply,
         contentTextStyle: const TextStyle(color: Colors.white),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -176,16 +176,17 @@ class AppTheme {
         onTertiary: Colors.white,
       ),
       scaffoldBackgroundColor: const Color(0xFF15202B),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Color(0xFF15202B),
+      appBarTheme: AppBarTheme(
+        backgroundColor: const Color(0xFF15202B),
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: TextStyle(
+        titleTextStyle: const TextStyle(
           color: Colors.white,
           fontSize: 18,
           fontWeight: FontWeight.w600,
         ),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: Color(0xFF192734),
@@ -255,8 +256,12 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: Color(0xFFE0245E), width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
         hintStyle: const TextStyle(color: Color(0xFF8899A6)),
+        labelStyle: const TextStyle(color: Color(0xFF8899A6)),
       ),
       textTheme: const TextTheme(
         displayLarge: TextStyle(color: Colors.white),
@@ -275,10 +280,7 @@ class AppTheme {
         labelMedium: TextStyle(color: Colors.white),
         labelSmall: TextStyle(color: Color(0xFF8899A6)),
       ),
-      iconTheme: const IconThemeData(
-        color: Color(0xFF8899A6),
-        size: 24,
-      ),
+      iconTheme: const IconThemeData(color: Color(0xFF8899A6), size: 24),
       dividerTheme: const DividerThemeData(
         color: Color(0xFF38444D),
         thickness: 0.5,
@@ -286,11 +288,9 @@ class AppTheme {
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.reply,
         contentTextStyle: const TextStyle(color: Colors.white),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         behavior: SnackBarBehavior.floating,
       ),
     );
   }
-} 
+}

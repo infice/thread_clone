@@ -19,15 +19,17 @@ class PostCard extends StatelessWidget {
         vertical: AppSizes.smallPadding,
         horizontal: AppSizes.padding,
       ),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppColors.border, width: 0.8)),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Theme.of(context).dividerColor, width: 0.8),
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildAvatarColumn(),
           const SizedBox(width: AppSizes.padding),
-          _buildPostContent(),
+          _buildPostContent(context),
         ],
       ),
     );
@@ -38,32 +40,34 @@ class PostCard extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: AppSizes.avatarSize / 2,
-          backgroundImage: post.author.profileImage != null
-              ? CachedNetworkImageProvider(post.author.profileImage!)
-              : null,
-          child: post.author.profileImage == null
-              ? Text(
-                  post.author.displayName[0].toUpperCase(),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                )
-              : null,
+          backgroundImage:
+              post.author.profileImage != null
+                  ? CachedNetworkImageProvider(post.author.profileImage!)
+                  : null,
+          child:
+              post.author.profileImage == null
+                  ? Text(
+                    post.author.displayName[0].toUpperCase(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                  : null,
         ),
         // You can add the vertical line here if needed
       ],
     );
   }
 
-  Widget _buildPostContent() {
+  Widget _buildPostContent(BuildContext context) {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildHeader(),
+          _buildHeader(context),
           const SizedBox(height: 4),
-          Text(post.content, style: AppTextStyles.body),
+          Text(post.content, style: Theme.of(context).textTheme.bodyMedium),
           if (post.images != null && post.images!.isNotEmpty) _buildImages(),
           const SizedBox(height: AppSizes.padding),
           _buildActions(),
@@ -74,12 +78,14 @@ class PostCard extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
     return Row(
       children: [
         Text(
           post.author.displayName,
-          style: AppTextStyles.body.copyWith(fontWeight: FontWeight.bold),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         if (post.author.isVerified) ...[
           const SizedBox(width: 4),
@@ -88,7 +94,7 @@ class PostCard extends StatelessWidget {
         const Spacer(),
         Text(
           Formatters.formatTimeAgo(post.createdAt),
-          style: AppTextStyles.caption,
+          style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(width: AppSizes.smallPadding),
         const Icon(Icons.more_horiz, color: AppColors.primary),
@@ -109,12 +115,14 @@ class PostCard extends StatelessWidget {
         child: CachedNetworkImage(
           imageUrl: post.images!.first,
           fit: BoxFit.cover,
-          placeholder: (context, url) => Container(
-            color: AppColors.surface,
-            child: const Center(child: CircularProgressIndicator()),
-          ),
-          errorWidget: (context, url, error) =>
-              const Icon(Icons.error, color: AppColors.secondary),
+          placeholder:
+              (context, url) => Container(
+                color: AppColors.surface,
+                child: const Center(child: CircularProgressIndicator()),
+              ),
+          errorWidget:
+              (context, url, error) =>
+                  const Icon(Icons.error, color: AppColors.secondary),
         ),
       ),
     );

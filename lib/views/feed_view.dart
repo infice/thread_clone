@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/feed_controller.dart';
 import '../widgets/post_card.dart';
+import '../widgets/threads_icon_cdn.dart';
 import '../utils/constants.dart';
 import 'create_post_view.dart';
 
@@ -20,15 +21,14 @@ class FeedView extends GetView<FeedController> {
     return AppBar(
       backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       elevation: 0,
-      title: Icon(
-        const IconData(0xe35e, fontFamily: 'MaterialIcons'),
-        color: Theme.of(context).primaryColor,
-        size: 32,
-      ),
+      title: ThreadsIconCDN(size: 32),
       centerTitle: true,
       actions: [
         IconButton(
-          icon: Icon(Icons.add_box_outlined, color: Theme.of(context).primaryColor),
+          icon: Icon(
+            Icons.add_box_outlined,
+            color: Theme.of(context).primaryColor,
+          ),
           onPressed: () {
             Get.to(() => CreatePostView());
           },
@@ -73,7 +73,10 @@ class FeedView extends GetView<FeedController> {
         ),
         decoration: BoxDecoration(
           border: Border(
-            bottom: BorderSide(color: Theme.of(context).dividerColor, width: 0.8),
+            bottom: BorderSide(
+              color: Theme.of(context).dividerColor,
+              width: 0.8,
+            ),
           ),
         ),
         child: Row(
@@ -84,12 +87,17 @@ class FeedView extends GetView<FeedController> {
               child: Icon(Icons.person, color: Colors.white),
             ),
             const SizedBox(width: AppSizes.padding),
-            Text('whats_new'.tr, style: TextStyle(
-              color: Theme.of(context).textTheme.bodyMedium?.color,
-              fontSize: 16,
-            )),
+            Text(
+              'whats_new'.tr,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontSize: 16),
+            ),
             const Spacer(),
-            Icon(Icons.image_outlined, color: Theme.of(context).iconTheme.color),
+            Icon(
+              Icons.image_outlined,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ],
         ),
       ),
@@ -101,14 +109,17 @@ class FeedView extends GetView<FeedController> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.feed_outlined, size: 64, color: Theme.of(context).iconTheme.color),
+          Icon(
+            Icons.feed_outlined,
+            size: 64,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
           SizedBox(height: AppSizes.padding),
           Text(
             'no_posts'.tr,
-            style: TextStyle(
-              color: Theme.of(context).textTheme.bodyMedium?.color,
-              fontSize: 16,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(fontSize: 16),
           ),
         ],
       ),
