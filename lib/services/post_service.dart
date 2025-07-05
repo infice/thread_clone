@@ -24,6 +24,11 @@ class MockPostService implements IPostService {
 
   @override
   Future<void> createPost({required String content, String? imagePath}) async {
+    // Mock: ถ้ามี imagePath ให้แทนที่ด้วย URL จริง (สมมุติอัปโหลดแล้วได้ URL)
+    final String? mockImageUrl =
+        imagePath != null
+            ? 'https://images.unsplash.com/photo-1506744038136-46273834b3fb'
+            : null;
     // Create a new post
     final newPost = Post(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -35,12 +40,9 @@ class MockPostService implements IPostService {
         isVerified: false,
       ),
       content: content,
-      images: imagePath != null ? [imagePath] : [],
+      images: mockImageUrl != null ? [mockImageUrl] : [],
       createdAt: DateTime.now(),
       likesCount: 0,
-    
-    
-    
       repliesCount: 0,
       repostsCount: 0,
       isLiked: false,
@@ -48,11 +50,9 @@ class MockPostService implements IPostService {
       repostedPost: null,
       replyTo: null,
     );
-
     // Add to the beginning of the posts list
     _posts.insert(0, newPost);
-    
     // Simulate API delay
     await Future.delayed(Duration(milliseconds: 500));
   }
-} 
+}

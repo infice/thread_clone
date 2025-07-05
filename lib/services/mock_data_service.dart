@@ -14,7 +14,10 @@ class MockDataService {
           isVerified: true,
         ),
         content: 'Excited to share the latest updates on our AI initiatives!',
-        images: [],
+        images: [
+          'https://images.unsplash.com/photo-1506744038136-46273834b3fb',
+          'https://images.unsplash.com/photo-1519125323398-675f0ddb6308',
+        ],
         createdAt: DateTime.now().subtract(Duration(hours: 2)),
         likesCount: 1247,
         repliesCount: 89,
@@ -34,7 +37,9 @@ class MockDataService {
           isVerified: true,
         ),
         content: 'Tesla production numbers looking great this quarter! 🚗⚡',
-        images: [],
+        images: [
+          'https://images.unsplash.com/photo-1465101046530-73398c7f28ca',
+        ],
         createdAt: DateTime.now().subtract(Duration(hours: 4)),
         likesCount: 2156,
         repliesCount: 156,
@@ -53,7 +58,8 @@ class MockDataService {
           profileImage: null,
           isVerified: true,
         ),
-        content: 'Google I/O was incredible this year. So many exciting announcements!',
+        content:
+            'Google I/O was incredible this year. So many exciting announcements!',
         images: [],
         createdAt: DateTime.now().subtract(Duration(hours: 6)),
         likesCount: 892,

@@ -7,7 +7,7 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.light,
       colorScheme: ColorScheme.light(
-        primary: AppColors.reply,
+        primary: Color(0xFF000000),
         onPrimary: Colors.white,
         secondary: const Color(0xFF657786),
         onSecondary: Colors.white,
@@ -25,7 +25,7 @@ class AppTheme {
         scrim: Colors.black26,
         inverseSurface: const Color(0xFF14171A),
         onInverseSurface: Colors.white,
-        inversePrimary: AppColors.reply,
+        inversePrimary: Color(0xFF000000),
         tertiary: const Color(0xFF17BF63),
         onTertiary: Colors.white,
       ),
@@ -44,7 +44,7 @@ class AppTheme {
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: Colors.white,
-        selectedItemColor: AppColors.reply,
+        selectedItemColor: Color(0xFF000000),
         unselectedItemColor: Color(0xFF657786),
         type: BottomNavigationBarType.fixed,
         elevation: 8,
@@ -59,7 +59,7 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.reply,
+          backgroundColor: Color(0xFF000000),
           foregroundColor: Colors.white,
           elevation: 0,
           shape: RoundedRectangleBorder(
@@ -70,8 +70,8 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.reply,
-          side: BorderSide(color: AppColors.reply),
+          foregroundColor: Color(0xFF000000),
+          side: BorderSide(color: Color(0xFF000000)),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -80,7 +80,7 @@ class AppTheme {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: AppColors.reply,
+          foregroundColor: Color(0xFF000000),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -140,7 +140,7 @@ class AppTheme {
         thickness: 0.5,
       ),
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: AppColors.reply,
+        backgroundColor: Color(0xFF000000),
         contentTextStyle: const TextStyle(color: Colors.white),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         behavior: SnackBarBehavior.floating,

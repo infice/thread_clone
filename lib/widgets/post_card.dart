@@ -5,6 +5,7 @@ import '../models/post_model.dart';
 import '../controllers/feed_controller.dart';
 import '../utils/constants.dart';
 import '../utils/formatters.dart';
+import '../views/post_detail_view.dart';
 
 class PostCard extends StatelessWidget {
   final Post post;
@@ -14,23 +15,31 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        vertical: AppSizes.smallPadding,
-        horizontal: AppSizes.padding,
-      ),
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: Theme.of(context).dividerColor, width: 0.8),
+    return GestureDetector(
+      onTap: () {
+        Get.to(() => PostDetailView(post: post));
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          vertical: AppSizes.smallPadding,
+          horizontal: AppSizes.padding,
         ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildAvatarColumn(),
-          const SizedBox(width: AppSizes.padding),
-          _buildPostContent(context),
-        ],
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: Theme.of(context).dividerColor,
+              width: 0.8,
+            ),
+          ),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildAvatarColumn(),
+            const SizedBox(width: AppSizes.padding),
+            _buildPostContent(context),
+          ],
+        ),
       ),
     );
   }
